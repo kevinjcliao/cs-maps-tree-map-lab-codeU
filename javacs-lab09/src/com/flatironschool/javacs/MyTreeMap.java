@@ -66,14 +66,37 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 		if (target == null) {
             throw new NullPointerException();
 	    }
-		
 		// something to make the compiler happy
 		@SuppressWarnings("unchecked")
 		Comparable<? super K> k = (Comparable<? super K>) target;
-		
+		int cmp = k.compareTo(this.root.key);
+    System.out.println("The cmp value " + String.valueOf(cmp));
 		// the actual search
-        // TODO: Fill this in.
-        return null;
+    Node finger = this.root;
+
+    System.out.println("Beginning search.");
+    while(cmp!=0) {
+        if(cmp<0){
+            if(finger.left != null) {
+                finger = finger.left;
+            } else {
+                System.out.println("Returning null");
+                return null;
+            }
+        } else {
+            if(finger.right != null) {
+                finger = finger.right;
+            } else {
+                System.out.println("Returning null");
+                return null;
+            }
+        }
+
+        cmp = k.compareTo(finger.key);
+        System.out.println("New cmp value is: " + String.valueOf(cmp));
+    }
+    System.out.println("I make it to the end.:) ");
+    return finger;
 	}
 
 	/**
@@ -180,7 +203,7 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 		map.put("Word2", 2);
 		Integer value = map.get("Word1");
 		System.out.println(value);
-		
+
 		for (String key: map.keySet()) {
 			System.out.println(key + ", " + map.get(key));
 		}
