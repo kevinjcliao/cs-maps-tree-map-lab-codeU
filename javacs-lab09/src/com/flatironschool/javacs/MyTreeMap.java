@@ -142,11 +142,21 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 		return size == 0;
 	}
 
+    public Set<K> keySetHelper(Set<K> currentSet, Node finger) {
+        if(finger == null) {
+            return currentSet;
+        }
+        currentSet = keySetHelper(currentSet, finger.left);
+        currentSet.add(finger.key);
+        currentSet = keySetHelper(currentSet, finger.right);
+        return currentSet;
+            
+    }
+
 	@Override
 	public Set<K> keySet() {
 		Set<K> set = new LinkedHashSet<K>();
-        // TODO: Fill this in.
-		return set;
+		return keySetHelper(set, this.root);
 	}
 
 	@Override
