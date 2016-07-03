@@ -70,32 +70,26 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 		@SuppressWarnings("unchecked")
 		Comparable<? super K> k = (Comparable<? super K>) target;
 		int cmp = k.compareTo(this.root.key);
-    System.out.println("The cmp value " + String.valueOf(cmp));
 		// the actual search
     Node finger = this.root;
 
-    System.out.println("Beginning search.");
     while(cmp!=0) {
         if(cmp<0){
             if(finger.left != null) {
                 finger = finger.left;
             } else {
-                System.out.println("Returning null");
                 return null;
             }
         } else {
             if(finger.right != null) {
                 finger = finger.right;
             } else {
-                System.out.println("Returning null");
                 return null;
             }
         }
 
         cmp = k.compareTo(finger.key);
-        System.out.println("New cmp value is: " + String.valueOf(cmp));
     }
-    System.out.println("I make it to the end.:) ");
     return finger;
 	}
 
@@ -111,11 +105,22 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 			return obj == null;
 		}
 		return target.equals(obj);
+
 	}
 
+    public boolean containsValueHelper(Object target, Node finger) {
+        if(this.equals(target, finger.value)) return true;
+        boolean leftContains = finger.left != null
+            ? this.containsValueHelper(target, finger.left)
+            : false;
+        boolean rightContains = finger.right != null
+            ? this.containsValueHelper(target, finger.right)
+            : false;
+        return leftContains || rightContains;
+    }
 	@Override
 	public boolean containsValue(Object target) {
-		return false;
+      return containsValueHelper(target, this.root);
 	}
 
 	@Override
@@ -152,14 +157,54 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 		if (root == null) {
 			root = new Node(key, value);
 			size++;
+      System.out.println("Size is now: " + size);
 			return null;
 		}
 		return putHelper(root, key, value);
 	}
 
 	private V putHelper(Node node, K key, V value) {
-        // TODO: Fill this in.
-        return null;
+      System.out.println("putHelper called for node: " + key + "," +  value);
+      Node newNode = new Node(key, value);
+      Node finger = this.root;
+      System.out.println("Is this node already here? " + this.findNode(key));
+      while(finger != null) {
+          System.out.println("Comparing: " + finger.key + " to: " + key);
+          Comparable<? super K> k = (Comparable<? super K>) finger.key;
+          int cmp = k.compareTo(key);
+          if(cmp<0) {
+              if(finger.right == null) {
+                  System.out.println("Hit base case!");
+                  finger.right = newNode;
+                  size++;
+                  System.out.println("Size is now: " + size);
+                  return null;
+              } else if (this.equals(finger.right.key, key)) {
+                  V toReturn = finger.right.value;
+                  finger.right = newNode;
+                  return toReturn;
+              } else {
+                  System.out.println("Going left.");
+                  finger = finger.right;
+              }
+          } else {
+              if(finger.left == null) {
+                  System.out.println("Hit base case!");
+                  finger.left = newNode;
+                  size++;
+                  System.out.println("Size is now: " + size);
+                  return null;
+              } else if (this.equals(finger.left.key, key)) {
+                  V toReturn = finger.left.value;
+                  finger.left = newNode;
+                  return toReturn;
+              } else {
+                  System.out.println("Going right.");
+                  finger = finger.left;
+              }
+          }
+      }
+      return null;
 	}
 
 	@Override
